@@ -34,6 +34,7 @@ public class ActivityHome extends AppCompatActivity {
     LinearLayout myDialog;
     EditText etd, eta, etc, etDate;
 
+
     private ExpansesList expansesList;
     private HelperDB dbHelper;
     FirebaseHelper firebaseHelper = new FirebaseHelper();
