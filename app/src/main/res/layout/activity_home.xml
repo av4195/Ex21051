@@ -39,7 +39,7 @@
             android:padding="24dp">
 
             <TextView
-                android:id="@+id/tvAmount"
+                android:id="@+id/tvOverallAmount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

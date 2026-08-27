@@ -94,7 +94,7 @@ public class AddExpenseActivity extends AppCompatActivity {
         if (isEditing) {
             // Update existing expense
             Expense updatedExpense = new Expense(expenseId, description, amount, category, date);
-
+            firebaseHelper.updateExpense(updatedExpense);
 //            dbHelper.updateExpanse(updatedExpense);
             finish();
         } else {

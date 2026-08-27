@@ -8,19 +8,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -33,10 +27,9 @@ public class ActivityHome extends AppCompatActivity {
     AlertDialog.Builder adb2;
     LinearLayout myDialog;
     EditText etd, eta, etc, etDate;
-
-
+    TextView tvOverallAmount;
     private ExpansesList expansesList;
-    private HelperDB dbHelper;
+//    private HelperDB dbHelper;
     FirebaseHelper firebaseHelper = new FirebaseHelper();
 
 
@@ -50,7 +43,7 @@ public class ActivityHome extends AppCompatActivity {
         setContentView(R.layout.activity_home);
         rvExpanses = findViewById(R.id.rvExpanses);
         rvExpanses.setLayoutManager(new LinearLayoutManager(this));
-
+        tvOverallAmount = findViewById(R.id.tvOverallAmount);
         expansesList = ExpansesList.getInstance();
         expenseList = expansesList.getExpanses();
 //        dbHelper = new HelperDB(this);
@@ -107,6 +100,7 @@ public class ActivityHome extends AppCompatActivity {
         firebaseHelper.getExpensesOrderByDate(new FirebaseHelper.OnDataLoadedListener() {
             @Override
             public void onDataLoaded(List<Expense> expenses) {
+                calculateOverallExpense(expenses);
                 adapter.notifyDataSetChanged();
             }
             @Override
@@ -114,6 +108,15 @@ public class ActivityHome extends AppCompatActivity {
                 Toast.makeText(ActivityHome.this, "Error", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void calculateOverallExpense(List<Expense> expenses) {
+        int sum = 0;
+        for (Expense temp:
+             expenses) {
+            sum += Integer.parseInt(temp.getAmount());
+        }
+        tvOverallAmount.setText(sum + "$");
     }
 
     private void setupItemAlertDialog(Expense expense)
@@ -137,7 +140,8 @@ public class ActivityHome extends AppCompatActivity {
                 expenseList.remove(expense);
                 adapter.notifyItemRemoved(position);
                 adapter.notifyItemRangeChanged(position, expenseList.size());
-                dbHelper.deleteExpanse(expense.getId());
+//                dbHelper.deleteExpanse(expense.getId());
+                firebaseHelper.deleteExpense(expense);
                 Toast.makeText(ActivityHome.this, "Deleted", Toast.LENGTH_SHORT).show();
             }
         });

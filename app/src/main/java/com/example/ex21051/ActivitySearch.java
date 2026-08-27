@@ -20,8 +20,8 @@ public class ActivitySearch extends AppCompatActivity {
     private RecyclerView rvResults;
     private ExpenseAdapter adapter;
     private List<Expense> resultsList;
-    private HelperDB dbHelper;
-
+    private FirebaseHelper firebaseHelper;
+//    private HelperDB dbHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,7 +32,8 @@ public class ActivitySearch extends AppCompatActivity {
         btnSearch = findViewById(R.id.btnSearch);
         rvResults = findViewById(R.id.rvFilterdExpanses);
 
-        dbHelper = new HelperDB(this);
+//        dbHelper = new HelperDB(this);
+        firebaseHelper = new FirebaseHelper();
         resultsList = new ArrayList<>();
         adapter = new ExpenseAdapter(resultsList);
 
@@ -43,9 +44,20 @@ public class ActivitySearch extends AppCompatActivity {
             String desc = etDescription.getText().toString();
             String amount = etMaxAmount.getText().toString();
 
-            List<Expense> filtered = dbHelper.filterExpenses(desc, amount);
-            resultsList.clear();
-            resultsList.addAll(filtered);
+//            List<Expense> filtered = dbHelper.filterExpenses(desc, amount);
+//            resultsList.clear();
+//            resultsList.addAll(filtered);
+            firebaseHelper.filterExpenses(desc, amount, new FirebaseHelper.OnDataLoadedListener(){
+                @Override
+                public void onDataLoaded(List<Expense> expenses) {
+                    resultsList.clear();
+                    resultsList.addAll(expenses);
+                }
+                @Override
+                public void onDataCancel() {
+
+                }
+            });
             adapter.notifyDataSetChanged();
         });
     }
@@ -61,5 +73,4 @@ public class ActivitySearch extends AppCompatActivity {
         navigationMenu.OnMenuItemClick(item, this);
         return true;
     }
-
 }

@@ -24,19 +24,26 @@ public class FirebaseHelper {
         void onDataLoaded(List<Expense> expenses);
         void onDataCancel();
     }
+
+    public interface Whatever{
+        void whatever();
+    }
     private FirebaseDatabase database;
 
     public FirebaseHelper() {
         database = FirebaseDatabase.getInstance();
     }
 
-    public void addExpense(Expense expenseToAdd)
-    {
+    public void addExpense(Expense expenseToAdd) {
         String keyId = FBref.refExpenses.push().getKey();
         assert keyId == null;
         expenseToAdd.setId(Long.getLong((keyId)));
 //        database.getReference("expenses/" + keyId).setValue(expenseToAdd);
         FBref.refExpenses.child(keyId).setValue(expenseToAdd);
+    }
+
+    public void deleteExpense(Expense expense) {
+        FBref.refExpenses.child(String.valueOf(expense.getId())).removeValue();
     }
 
     public void getExpensesOrderByDate(OnDataLoadedListener listener){
@@ -50,6 +57,8 @@ public class FirebaseHelper {
                         Expense expense = data.getValue(Expense.class);
                         expenses.add(expense);
                     }
+                    ExpansesList.getInstance().getExpanses().clear();
+                    ExpansesList.getInstance().getExpanses().addAll(expenses);
                     listener.onDataLoaded(expenses);
                 }
 
@@ -60,8 +69,7 @@ public class FirebaseHelper {
             });
     }
 
-    public void updateExpense(Expense expense)
-    {
+    public void updateExpense(Expense expense) {
         FBref.refExpenses.child(String.valueOf(expense.getId())).setValue(expense);
     }
 
@@ -86,7 +94,7 @@ public class FirebaseHelper {
                 {
                     for (Expense expense :
                          expenses) {
-                        if (Integer.parseInt(expense.amount) <= Integer.parseInt(maxAmount))
+                        if (Integer.parseInt(expense.amount) > Integer.parseInt(maxAmount))
                             expenses.remove(expense);
                     }
                 }
@@ -100,8 +108,7 @@ public class FirebaseHelper {
         });
     }
 
-    public List<Expense> getExpenses(OnDataLoadedListener listener)
-    {
+    public List<Expense> getExpenses(OnDataLoadedListener listener) {
         List<Expense> expenses = new ArrayList<>();
         FBref.refExpenses.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
