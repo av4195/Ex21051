@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.Locale;
 
 public class Expense {
-    public long KEY_ID;
+    public String KEY_ID;
     public String description = "description";
     public String amount = "amount";
     public String category = "category";
@@ -14,7 +14,7 @@ public class Expense {
 
     public Expense() {}
 
-    public Expense(long keyid, String description, String amount, String category, String date) {
+    public Expense(String keyid, String description, String amount, String category, String date) {
         this.KEY_ID = keyid;
         this.description = description;
         this.amount = amount;
@@ -22,7 +22,7 @@ public class Expense {
         this.date = date;
     }
 
-    public Expense(long keyid, String description, String amount, String category, String date, Object timestamp) {
+    public Expense(String keyid, String description, String amount, String category, String date, Object timestamp) {
         this.KEY_ID = keyid;
         this.description = description;
         this.amount = amount;
@@ -48,7 +48,7 @@ public class Expense {
         return date;
     }
 
-    public long getId() {
+    public String getId() {
         return KEY_ID;
     }
 
@@ -82,7 +82,7 @@ public class Expense {
         }
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.KEY_ID = id;
     }
 }

@@ -36,14 +36,12 @@ public class FirebaseHelper {
 
     public void addExpense(Expense expenseToAdd) {
         String keyId = FBref.refExpenses.push().getKey();
-        assert keyId == null;
-        expenseToAdd.setId(Long.getLong((keyId)));
-//        database.getReference("expenses/" + keyId).setValue(expenseToAdd);
+        expenseToAdd.setId(keyId);
         FBref.refExpenses.child(keyId).setValue(expenseToAdd);
     }
 
     public void deleteExpense(Expense expense) {
-        FBref.refExpenses.child(String.valueOf(expense.getId())).removeValue();
+        FBref.refExpenses.child(expense.getId()).removeValue();
     }
 
     public void getExpensesOrderByDate(OnDataLoadedListener listener){
@@ -70,32 +68,52 @@ public class FirebaseHelper {
     }
 
     public void updateExpense(Expense expense) {
-        FBref.refExpenses.child(String.valueOf(expense.getId())).setValue(expense);
+        FBref.refExpenses.child(expense.getId()).setValue(expense);
     }
 
     public void filterExpenses(String description, String maxAmount, OnDataLoadedListener listener) {
         Query query = FBref.refExpenses;
-        if (!description.isEmpty()) {
-            query.orderByChild("description").equalTo(description);
-        } else if (!maxAmount.isEmpty() && description.isEmpty()) {
-            query.orderByChild("amount").endAt(Integer.parseInt(maxAmount));
+
+        if (description != null && !description.isEmpty()) {
+            // Case: Description is provided (handles cases: both provided OR only description provided)
+            query = query.orderByChild("description").equalTo(description);
+        } else if (maxAmount != null && !maxAmount.isEmpty()) {
+            // Case: Only amount is provided
+            try {
+                query = query.orderByChild("amount").endAt(maxAmount);
+            } catch (Exception e) {
+                // Fallback or handle error
+            }
         }
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 List<Expense> expenses = new ArrayList<>();
-                for (DataSnapshot data :
-                        snapshot.getChildren()) {
+                for (DataSnapshot data : snapshot.getChildren()) {
                     Expense expense = data.getValue(Expense.class);
-                    expenses.add(expense);
+                    if (expense != null) {
+                        expenses.add(expense);
+                    }
                 }
-                if (!maxAmount.isEmpty() && !description.isEmpty())
-                {
-                    for (Expense expense :
-                         expenses) {
-                        if (Integer.parseInt(expense.amount) > Integer.parseInt(maxAmount))
-                            expenses.remove(expense);
+
+                // If BOTH description and amount were provided, we filter client-side for amount
+                if (description != null && !description.isEmpty() && maxAmount != null && !maxAmount.isEmpty()) {
+                    try {
+                        int maxLimit = Integer.parseInt(maxAmount);
+                        List<Expense> filtered = new ArrayList<>();
+                        for (Expense e : expenses) {
+                            try {
+                                if (Integer.parseInt(e.getAmount()) <= maxLimit) {
+                                    filtered.add(e);
+                                }
+                            } catch (NumberFormatException nfe) {
+                                // Skip if amount is not a valid number
+                            }
+                        }
+                        expenses = filtered;
+                    } catch (NumberFormatException e) {
+                        // Handle invalid maxAmount
                     }
                 }
                 listener.onDataLoaded(expenses);
@@ -103,7 +121,7 @@ public class FirebaseHelper {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                listener.onDataCancel();
             }
         });
     }

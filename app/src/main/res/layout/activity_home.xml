@@ -7,6 +7,13 @@
     android:layout_height="match_parent"
     tools:context=".ActivityHome">
 
+    <include
+        layout="@layout/toolbar"
+        android:id="@+id/toolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/tvHeadLine"
         android:layout_width="wrap_content"
@@ -17,7 +24,7 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/materialCardView"

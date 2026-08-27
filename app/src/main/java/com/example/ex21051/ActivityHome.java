@@ -12,8 +12,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 
@@ -31,6 +34,7 @@ public class ActivityHome extends AppCompatActivity {
     private ExpansesList expansesList;
 //    private HelperDB dbHelper;
     FirebaseHelper firebaseHelper = new FirebaseHelper();
+    FloatingActionButton btnAddExpense;
 
 
     /**
@@ -41,11 +45,19 @@ public class ActivityHome extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         rvExpanses = findViewById(R.id.rvExpanses);
         rvExpanses.setLayoutManager(new LinearLayoutManager(this));
         tvOverallAmount = findViewById(R.id.tvOverallAmount);
         expansesList = ExpansesList.getInstance();
         expenseList = expansesList.getExpanses();
+        btnAddExpense = findViewById(R.id.btn_add_expense);
+        btnAddExpense.setOnClickListener(v -> {
+            startActivity(new Intent(ActivityHome.this, AddExpenseActivity.class));
+        });
 //        dbHelper = new HelperDB(this);
 //        if (expenseList.isEmpty()) {
 //            // Add some dummy data using Expense class if list is empty
