@@ -21,7 +21,7 @@ public class ExpansesList {
         return expanses;
     }
 
-    public Expense getExpenseById(long id) {
-        return expanses.stream().filter(expense -> expense.getId() == id).findFirst().orElse(null);
+    public Expense getExpenseById(String id) {
+        return expanses.stream().filter(expense -> expense.getId().equals(id)).findFirst().orElse(null);
     }
 }

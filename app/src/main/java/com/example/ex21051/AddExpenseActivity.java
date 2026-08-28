@@ -7,6 +7,14 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
+import com.google.android.material.datepicker.MaterialDatePicker;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * @author Adi Waizman
@@ -24,7 +32,7 @@ public class AddExpenseActivity extends AppCompatActivity {
     EditText etDate;
     Button btnAddExpanse;
     private FirebaseHelper firebaseHelper;
-    private long expenseId = -1;
+    private String expenseId = null;
 
     private boolean isEditing = false;
 
@@ -32,6 +40,9 @@ public class AddExpenseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         etAmount = findViewById(R.id.etAmount);
         etDescription = findViewById(R.id.editTextDescription);
@@ -43,12 +54,30 @@ public class AddExpenseActivity extends AppCompatActivity {
         // Check for Intent extras
         if (getIntent().hasExtra("id")) {
             isEditing = true;
-            expenseId = getIntent().getLongExtra("id", -1);
-            if (expenseId != -1)
+            expenseId = getIntent().getStringExtra("id");
+            if (expenseId != null)
                 loadExpenseData(expenseId);
         }
 
+        etDate.setOnClickListener(v -> showDatePicker());
+
         btnAddExpanse.setOnClickListener(v -> addExpanse());
+    }
+
+    private void showDatePicker() {
+        MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText("Select Date")
+                .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                .build();
+
+        datePicker.addOnPositiveButtonClickListener(selection -> {
+            Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            calendar.setTimeInMillis(selection);
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            etDate.setText(format.format(calendar.getTime()));
+        });
+
+        datePicker.show(getSupportFragmentManager(), "DATE_PICKER");
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -74,7 +103,7 @@ public class AddExpenseActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void loadExpenseData(long id) {
+    private void loadExpenseData(String id) {
         Expense expense = ExpansesList.getInstance().getExpenseById(id);
         if (expense != null) {
             etAmount.setText(expense.getAmount());
@@ -99,7 +128,7 @@ public class AddExpenseActivity extends AppCompatActivity {
             finish();
         } else {
             // Create a new Expanse object
-            Expense newExpense = new Expense(0, description, amount, category, date);
+            Expense newExpense = new Expense(null, description, amount, category, date);
             // Insert the new Expanse into the database
             firebaseHelper.addExpense(newExpense);
             finish();

@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,6 +27,9 @@ public class ActivitySearch extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         etDescription = findViewById(R.id.et_description);
         etMaxAmount = findViewById(R.id.etFilterAmount);
@@ -52,13 +56,13 @@ public class ActivitySearch extends AppCompatActivity {
                 public void onDataLoaded(List<Expense> expenses) {
                     resultsList.clear();
                     resultsList.addAll(expenses);
+                    adapter.notifyDataSetChanged();
                 }
                 @Override
                 public void onDataCancel() {
 
                 }
             });
-            adapter.notifyDataSetChanged();
         });
     }
 
