@@ -18,32 +18,54 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * This class handles all the communication with Firebase.
+ * It is used to add, delete, update and get expenses.
+ */
 public class FirebaseHelper {
 
+    /**
+     * An interface used to get the expenses after the data is loaded from Firebase.
+     */
     public interface OnDataLoadedListener {
         void onDataLoaded(List<Expense> expenses);
         void onDataCancel();
     }
 
-    public interface Whatever{
-        void whatever();
-    }
     private FirebaseDatabase database;
 
+    /**
+     * Creates a FirebaseHelper object and connects to Firebase.
+     */
     public FirebaseHelper() {
         database = FirebaseDatabase.getInstance();
     }
 
+    /**
+     * Adds a new expense to Firebase.
+     *
+     * @param expenseToAdd the expense to add
+     */
     public void addExpense(Expense expenseToAdd) {
         String keyId = FBref.refExpenses.push().getKey();
         expenseToAdd.setId(keyId);
         FBref.refExpenses.child(keyId).setValue(expenseToAdd);
     }
 
+    /**
+     * Deletes an expense from Firebase.
+     *
+     * @param expense the expense to delete
+     */
     public void deleteExpense(Expense expense) {
         FBref.refExpenses.child(expense.getId()).removeValue();
     }
 
+    /**
+     * Gets all the expenses from Firebase ordered by their date.
+     *
+     * @param listener the listener that receives the loaded expenses
+     */
     public void getExpensesOrderByDate(OnDataLoadedListener listener){
         List<Expense> expenses = new ArrayList<>();
             Query query = FBref.refExpenses.orderByChild("timestamp");
@@ -67,10 +89,22 @@ public class FirebaseHelper {
             });
     }
 
+    /**
+     * Updates an existing expense in Firebase.
+     *
+     * @param expense the expense to update
+     */
     public void updateExpense(Expense expense) {
         FBref.refExpenses.child(expense.getId()).setValue(expense);
     }
 
+    /**
+     * Filters expenses by description and maximum amount.
+     *
+     * @param description the description to search for
+     * @param maxAmount the maximum amount of the expenses
+     * @param listener the listener that receives the filtered expenses
+     */
     public void filterExpenses(String description, String maxAmount, OnDataLoadedListener listener) {
         Query query = FBref.refExpenses;
 
@@ -126,6 +160,12 @@ public class FirebaseHelper {
         });
     }
 
+    /**
+     * Gets all the expenses from Firebase.
+     *
+     * @param listener the listener that receives the loaded expenses
+     * @return null because the data is loaded asynchronously
+     */
     public List<Expense> getExpenses(OnDataLoadedListener listener) {
         List<Expense> expenses = new ArrayList<>();
         FBref.refExpenses.addListenerForSingleValueEvent(new ValueEventListener() {

@@ -14,6 +14,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/**
+ * This activity allows the user to search for expenses.
+ * The user can filter expenses by description and amount.
+ */
 public class ActivitySearch extends AppCompatActivity {
 
     private EditText etDescription, etMaxAmount;
@@ -22,7 +27,14 @@ public class ActivitySearch extends AppCompatActivity {
     private ExpenseAdapter adapter;
     private List<Expense> resultsList;
     private FirebaseHelper firebaseHelper;
-//    private HelperDB dbHelper;
+
+
+    /**
+     * Creates and initializes the activity.
+     * It sets up the views, RecyclerView and search button.
+     *
+     * @param savedInstanceState the saved state of the activity
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,7 +48,7 @@ public class ActivitySearch extends AppCompatActivity {
         btnSearch = findViewById(R.id.btnSearch);
         rvResults = findViewById(R.id.rvFilterdExpanses);
 
-//        dbHelper = new HelperDB(this);
+
         firebaseHelper = new FirebaseHelper();
         resultsList = new ArrayList<>();
         adapter = new ExpenseAdapter(resultsList);
@@ -48,9 +60,6 @@ public class ActivitySearch extends AppCompatActivity {
             String desc = etDescription.getText().toString();
             String amount = etMaxAmount.getText().toString();
 
-//            List<Expense> filtered = dbHelper.filterExpenses(desc, amount);
-//            resultsList.clear();
-//            resultsList.addAll(filtered);
             firebaseHelper.filterExpenses(desc, amount, new FirebaseHelper.OnDataLoadedListener(){
                 @Override
                 public void onDataLoaded(List<Expense> expenses) {
@@ -66,12 +75,25 @@ public class ActivitySearch extends AppCompatActivity {
         });
     }
 
+
+    /**
+     * Creates the options menu for the activity.
+     *
+     * @param menu the menu to create
+     * @return true if the menu was created
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
+    /**
+     * Handles clicks on items in the options menu.
+     *
+     * @param item the selected menu item
+     * @return true after handling the selected item
+     */
     public boolean onOptionsItemSelected(MenuItem item) {
         NavigationMenu navigationMenu = NavigationMenu.getInstance();
         navigationMenu.OnMenuItemClick(item, this);

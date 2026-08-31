@@ -20,7 +20,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 
-
+/**
+ * This activity displays the list of expenses.
+ * It also allows the user to add, edit and delete expenses.
+ */
 public class ActivityHome extends AppCompatActivity {
 
     private RecyclerView rvExpanses;
@@ -38,8 +41,10 @@ public class ActivityHome extends AppCompatActivity {
 
 
     /**
-     *this method is for
-     * @param savedInstanceState
+     * Creates and initializes the activity.
+     * It sets up the views, RecyclerView and expense list.
+     *
+     * @param savedInstanceState the saved state of the activity
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,13 +63,7 @@ public class ActivityHome extends AppCompatActivity {
         btnAddExpense.setOnClickListener(v -> {
             startActivity(new Intent(ActivityHome.this, AddExpenseActivity.class));
         });
-//        dbHelper = new HelperDB(this);
-//        if (expenseList.isEmpty()) {
-//            // Add some dummy data using Expense class if list is empty
-//            expenseList.add(new Expense(1L, "Grocery shopping", "50.00", "Food", "2026-08-10"));
-//            expenseList.add(new Expense(2L, "Gas station", "40.00", "Transport", "2026-08-09"));
-//            expenseList.add(new Expense(3L, "Netflix subscription", "15.00", "Entertainment", "2026-08-01"));
-//        }
+
         getExpensesByDate();
         adapter = new ExpenseAdapter(expenseList);
         adapter.setOnItemClickListener(expense -> {
@@ -73,18 +72,33 @@ public class ActivityHome extends AppCompatActivity {
         rvExpanses.setAdapter(adapter);
     }
 
+    /**
+     * Creates the options menu for the activity.
+     *
+     * @param menu the menu to create
+     * @return true if the menu was created
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
+    /**
+     * Handles clicks on items in the options menu.
+     *
+     * @param item the selected menu item
+     * @return true after handling the selected item
+     */
     public boolean onOptionsItemSelected(MenuItem item) {
         NavigationMenu navigationMenu = NavigationMenu.getInstance();
         navigationMenu.OnMenuItemClick(item, this);
         return true;
     }
 
+    /**
+     * Updates the expense list when the activity resumes.
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -93,6 +107,9 @@ public class ActivityHome extends AppCompatActivity {
         }
     }
 
+    /**
+     * Gets all the expenses from Firebase.
+     */
     private void getExpenses()
     {
         firebaseHelper.getExpenses(new FirebaseHelper.OnDataLoadedListener() {
@@ -107,6 +124,9 @@ public class ActivityHome extends AppCompatActivity {
         });
     }
 
+    /**
+     * Gets all the expenses from Firebase ordered by date.
+     */
     private void getExpensesByDate()
     {
         firebaseHelper.getExpensesOrderByDate(new FirebaseHelper.OnDataLoadedListener() {
@@ -122,6 +142,11 @@ public class ActivityHome extends AppCompatActivity {
         });
     }
 
+    /**
+     * Calculates the total amount of all expenses.
+     *
+     * @param expenses the list of expenses
+     */
     private void calculateOverallExpense(List<Expense> expenses) {
         int sum = 0;
         for (Expense temp:
@@ -131,6 +156,11 @@ public class ActivityHome extends AppCompatActivity {
         tvOverallAmount.setText(sum + "$");
     }
 
+    /**
+     * Shows a dialog with options to edit or delete an expense.
+     *
+     * @param expense the selected expense
+     */
     private void setupItemAlertDialog(Expense expense)
     {
         adb = new AlertDialog.Builder(this);

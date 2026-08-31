@@ -21,7 +21,7 @@ import java.util.TimeZone;
  * @version 1.0
  * @since 01/08/2026
  *
- * this class is the main activity of the
+ *  This class allows the user to add a new expense or edit an existing expense.
  */
 
 public class AddExpenseActivity extends AppCompatActivity {
@@ -36,6 +36,12 @@ public class AddExpenseActivity extends AppCompatActivity {
 
     private boolean isEditing = false;
 
+    /**
+     * Creates and initializes the activity.
+     * It sets up the views and checks if an expense is being edited.
+     *
+     * @param savedInstanceState the saved state of the activity
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +70,9 @@ public class AddExpenseActivity extends AppCompatActivity {
         btnAddExpanse.setOnClickListener(v -> addExpanse());
     }
 
+    /**
+     * Opens a date picker and allows the user to select a date.
+     */
     private void showDatePicker() {
         MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
                 .setTitleText("Select Date")
@@ -79,12 +88,25 @@ public class AddExpenseActivity extends AppCompatActivity {
 
         datePicker.show(getSupportFragmentManager(), "DATE_PICKER");
     }
+
+    /**
+     * Creates the options menu for the activity.
+     *
+     * @param menu the menu to create
+     * @return true if the menu was created
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
+    /**
+     * Handles clicks on items in the options menu.
+     *
+     * @param item the selected menu item
+     * @return true if the item was handled
+     */
     public boolean onOptionsItemSelected(MenuItem item) {
         NavigationMenu navigationMenu = NavigationMenu.getInstance();
         navigationMenu.OnMenuItemClick(item, this);
@@ -103,6 +125,11 @@ public class AddExpenseActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Loads the data of an existing expense into the input fields.
+     *
+     * @param id the id of the expense
+     */
     private void loadExpenseData(String id) {
         Expense expense = ExpansesList.getInstance().getExpenseById(id);
         if (expense != null) {
@@ -114,6 +141,9 @@ public class AddExpenseActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Adds a new expense or updates an existing expense.
+     */
     private void addExpanse() {
         String amount = etAmount.getText().toString();
         String description = etDescription.getText().toString();

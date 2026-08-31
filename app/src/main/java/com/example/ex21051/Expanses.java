@@ -1,5 +1,8 @@
 package com.example.ex21051;
 
+/**
+ * This class contains constants for the expenses data.
+ */
 public class Expanses {
     public static final String TABLE_NAME = "expanses";
     public static final String KEY_ID = "id";
